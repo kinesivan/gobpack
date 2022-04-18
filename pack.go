@@ -47,6 +47,9 @@ func Pack(root fs.FS) (map[string][]byte, error) {
 		if err := f.Close(); err != nil {
 			return fmt.Errorf("closing %s: %w", fPath, err)
 		}
+		if *verboseFlag {
+			fmt.Printf("writing %s...\n", fPath)
+		}
 
 		return nil
 	})
@@ -91,6 +94,8 @@ func main() {
 	if err := writePkg(pkg, f); err != nil {
 		panic(err)
 	}
+
+	fmt.Printf("%d assets packaged.\n", len(pkg))
 }
 
 func cwdRelative(rel string) string {
