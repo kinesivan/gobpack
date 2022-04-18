@@ -14,6 +14,7 @@ import (
 var extFlag = flag.String("e", "png,jpg", "comma-delimited string of allowed file extensions")
 var outFlag = flag.String("o", "out.gob", "output file")
 var pathFlag = flag.String("p", "./assets", "path to folder containing files")
+var stripFlag = flag.Bool("x", false, "strip extensions in output")
 var verboseFlag = flag.Bool("v", false, "enable verbose logging")
 
 // allowedExts is the parsed result of extFlag. We use a map instead of a slice for faster indexing.
@@ -43,6 +44,12 @@ func Pack(root fs.FS) (map[string][]byte, error) {
 		if err != nil {
 			return fmt.Errorf("reading %s: %w", fPath, err)
 		}
+
+		// Strip extensions if enabled.
+		if *stripFlag {
+			fPath = strings.TrimSuffix(fPath, path.Ext(fPath))
+		}
+
 		pkg[fPath] = fb
 		if err := f.Close(); err != nil {
 			return fmt.Errorf("closing %s: %w", fPath, err)
